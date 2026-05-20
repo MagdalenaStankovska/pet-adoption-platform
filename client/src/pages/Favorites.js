@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PetCard from "../components/PetCard";
 
 function Favorites() {
     const [favorites, setFavorites] = useState([]);
     const user = JSON.parse(localStorage.getItem("user"));
 
-    const fetchFavorites = () => {
+    const fetchFavorites = useCallback(() => {
         if (!user) return;
 
         fetch(`http://localhost:5000/api/favorites/${user.id}`)
             .then((response) => response.json())
             .then((data) => setFavorites(data))
             .catch((error) => console.error(error));
-    };
+    }, [user]);
 
     useEffect(() => {
         fetchFavorites();

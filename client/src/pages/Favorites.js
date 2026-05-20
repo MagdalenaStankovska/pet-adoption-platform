@@ -16,7 +16,7 @@ function Favorites() {
 
     useEffect(() => {
         fetchFavorites();
-    }, []);
+    }, [fetchFavorites]);
 
     const removeFavorite = async (petId) => {
         await fetch("http://localhost:5000/api/favorites", {

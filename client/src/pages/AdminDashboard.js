@@ -398,7 +398,7 @@ function AdminDashboard() {
                                         >
                                             <img
                                                 src={url}
-                                                alt={`Application photo ${index + 1}`}
+                                                alt={`Application ${index + 1}`}
                                                 style={{
                                                     width: "100%",
                                                     height: "120px",

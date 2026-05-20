@@ -1,0 +1,16 @@
+# ============================================================================
+# Kubernetes Namespace for Pet Adoption Platform
+# Isolates all resources for this application in the cluster
+# ============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pet-adoption
+  labels:
+    app: pet-adoption
+    environment: production
+    managed-by: kubernetes
+  annotations:
+    description: "Pet Adoption Platform - Production Environment"
+

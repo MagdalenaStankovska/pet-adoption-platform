@@ -1,0 +1,90 @@
+# ============================================================================
+# Kubernetes ConfigMaps for Pet Adoption Platform
+# Non-sensitive configuration data for frontend and backend services
+# ============================================================================
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: pet-adoption
+  labels:
+    app: pet-adoption
+    component: frontend
+data:
+  REACT_APP_API_URL: "http://localhost/api"
+  REACT_APP_ENVIRONMENT: "production"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: pet-adoption
+  labels:
+    app: pet-adoption
+    component: backend
+data:
+  NODE_ENV: "production"
+  PORT: "5000"
+  MONGO_HOST: "mongodb-cluster-0.mongodb-service.pet-adoption.svc.cluster.local"
+  MONGO_PORT: "27017"
+  MONGO_DB_NAME: "pet-adoption"
+  LOG_LEVEL: "info"
+  CORS_ORIGIN: "*"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-config
+  namespace: pet-adoption
+  labels:
+    app: pet-adoption
+    component: database
+data:
+  init-db.js: |
+    db.getSiblingDB('admin').auth('petadmin', 'petadmin123');
+    const petdb = db.getSiblingDB('pet-adoption');
+    
+    // Create collections with validation schemas
+    petdb.createCollection('users', {
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['id', 'full_name', 'email', 'password'],
+          properties: {
+            id: { bsonType: 'int', description: 'Unique numeric ID' },
+            full_name: { bsonType: 'string' },
+            email: { bsonType: 'string' },
+            password: { bsonType: 'string' },
+            phone: { bsonType: 'string' },
+            role: { bsonType: 'string', enum: ['user', 'admin'] }
+          }
+        }
+      }
+    });
+    
+    petdb.createCollection('pets', {
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          required: ['id', 'name'],
+          properties: {
+            id: { bsonType: 'int' },
+            name: { bsonType: 'string' },
+            breed: { bsonType: 'string' },
+            age: { bsonType: 'int' },
+            gender: { bsonType: 'string' }
+          }
+        }
+      }
+    });
+    
+    petdb.users.createIndex({ email: 1 }, { unique: true });
+    petdb.users.createIndex({ id: 1 }, { unique: true });
+    petdb.pets.createIndex({ id: 1 }, { unique: true });
+    
+    print('Database initialization complete');
+

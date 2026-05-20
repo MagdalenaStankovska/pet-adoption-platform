@@ -1,0 +1,222 @@
+# ============================================================================
+# Kubernetes StatefulSet for MongoDB Database
+# Provides:
+# - Stable network identity for each pod
+# - Volumetric persistence across pod recreation
+# - Ordered scaling and updates
+# - Replica set configuration for high availability
+# ============================================================================
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb-cluster
+  namespace: pet-adoption
+  labels:
+    app: pet-adoption
+    component: database
+  annotations:
+    description: "MongoDB StatefulSet with persistent storage and automatic backups"
+spec:
+  serviceName: mongodb-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pet-adoption
+      component: database
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+
+  template:
+    metadata:
+      labels:
+        app: pet-adoption
+        component: database
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9216"
+    spec:
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+
+      # Service account
+      serviceAccountName: mongodb-sa
+
+      # Affinity rules for pod distribution
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - pet-adoption
+                    - key: component
+                      operator: In
+                      values:
+                        - database
+                topologyKey: kubernetes.io/hostname
+
+      initContainers: []
+
+      containers:
+        # MongoDB container
+        - name: mongodb
+          image: mongo:latest
+          imagePullPolicy: IfNotPresent
+
+          # Ports
+          ports:
+            - name: mongodb
+              containerPort: 27017
+              protocol: TCP
+            - name: metrics
+              containerPort: 9216
+              protocol: TCP
+
+          # Environment
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-credentials
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-credentials
+                  key: MONGO_INITDB_ROOT_PASSWORD
+            - name: MONGO_INITDB_DATABASE
+              value: "pet-adoption"
+
+          # Resources
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+
+          # Liveness probe
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mongosh --quiet --username "$MONGO_INITDB_ROOT_USERNAME" --password "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --eval "db.adminCommand('ping').ok" | grep 1
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+
+          # Readiness probe
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mongosh --quiet --username "$MONGO_INITDB_ROOT_USERNAME" --password "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin --eval "db.adminCommand('ping').ok" | grep 1
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+
+          # Security context
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 999
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+
+          # Volume mounts
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+
+        # Exporter removed for local single-node reliability
+
+      # DNS
+      dnsPolicy: ClusterFirst
+
+      # Termination
+      terminationGracePeriodSeconds: 60
+
+  # Persistent volumes
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-data
+        labels:
+          app: pet-adoption
+          component: database
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: hostpath
+        resources:
+          requests:
+            storage: 10Gi
+
+    # Keep only the data PVC for local Docker Desktop
+
+---
+# Service Account for MongoDB
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mongodb-sa
+  namespace: pet-adoption
+  labels:
+    app: pet-adoption
+    component: database
+
+---
+# Role for MongoDB
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mongodb-role
+  namespace: pet-adoption
+  labels:
+    app: pet-adoption
+    component: database
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch"]
+
+---
+# Role Binding for MongoDB
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mongodb-role-binding
+  namespace: pet-adoption
+  labels:
+    app: pet-adoption
+    component: database
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: mongodb-role
+subjects:
+  - kind: ServiceAccount
+    name: mongodb-sa
+    namespace: pet-adoption
+

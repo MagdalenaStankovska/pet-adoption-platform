@@ -1,22 +1,23 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PetCard from "../components/PetCard";
 
 function Favorites() {
     const [favorites, setFavorites] = useState([]);
     const user = JSON.parse(localStorage.getItem("user"));
 
-    const fetchFavorites = useCallback(() => {
+    const fetchFavorites = () => {
         if (!user) return;
 
         fetch(`http://localhost:5000/api/favorites/${user.id}`)
             .then((response) => response.json())
             .then((data) => setFavorites(data))
             .catch((error) => console.error(error));
-    }, [user]);
+    };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         fetchFavorites();
-    }, [fetchFavorites]);
+    }, []);
 
     const removeFavorite = async (petId) => {
         await fetch("http://localhost:5000/api/favorites", {

@@ -5,6 +5,15 @@ function Favorites() {
     const [favorites, setFavorites] = useState([]);
     const user = JSON.parse(localStorage.getItem("user"));
 
+    useEffect(() => {
+        if (!user) return;
+
+        fetch(`http://localhost:5000/api/favorites/${user.id}`)
+            .then((response) => response.json())
+            .then((data) => setFavorites(data))
+            .catch((error) => console.error(error));
+    }, [user]);
+
     const fetchFavorites = () => {
         if (!user) return;
 
@@ -14,10 +23,6 @@ function Favorites() {
             .catch((error) => console.error(error));
     };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => {
-        fetchFavorites();
-    }, []);
 
     const removeFavorite = async (petId) => {
         await fetch("http://localhost:5000/api/favorites", {

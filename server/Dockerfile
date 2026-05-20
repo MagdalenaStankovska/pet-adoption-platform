@@ -14,16 +14,16 @@ WORKDIR /app
 # Set environment to production
 ENV NODE_ENV=production
 
-# Copy package files from server directory
-COPY server/package*.json ./
+# Copy package files from the build context root (`./server`)
+COPY package*.json ./
 
 # Install dependencies with security audit
 RUN npm ci --only=production && \
     npm audit fix && \
     npm cache clean --force
 
-# Copy application code (server-specific files)
-COPY server/ .
+# Copy application code
+COPY . .
 
 EXPOSE 5000
 

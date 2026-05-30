@@ -5,24 +5,15 @@ function PetCard({ pet }) {
     const user = JSON.parse(localStorage.getItem("user"));
     const navigate = useNavigate();
 
-    const handleAdoptionRequest = async () => {
+    const handleAdoptionRequest = () => {
         if (!user) {
             alert("Please login first.");
+            navigate("/login");
             return;
         }
 
-        await fetch("http://localhost:5000/api/adoption-requests", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                user_id: user.id,
-                pet_id: pet.id
-            })
-        });
-
-        alert("Adoption request submitted! 🎉");
+        // Navigate to adoption form with full application details
+        navigate(`/adoption-form/${pet.id}`);
     };
 
     const handleFavorite = async () => {
@@ -157,7 +148,7 @@ function PetCard({ pet }) {
                             fontWeight: "700"
                         }}
                     >
-                        🏠 Adopt
+                        📋 Apply
                     </button>
                     <button
                         onClick={(e) => {

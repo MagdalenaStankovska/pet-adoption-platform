@@ -253,7 +253,7 @@ function PetDetails() {
                                 borderRadius: "14px"
                             }}
                         >
-                            🏠 Start Adoption
+                            📋 Start Application
                         </button>
                         <button
                             onClick={handleFavorite}

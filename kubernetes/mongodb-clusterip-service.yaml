@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-clusterip
+  namespace: pet-adoption
+  labels:
+    app: pet-adoption
+    component: database
+  annotations:
+    description: "Temporary ClusterIP service for MongoDB to provide stable DNS during local Docker Desktop testing"
+spec:
+  type: ClusterIP
+  selector:
+    app: pet-adoption
+    component: database
+  ports:
+    - name: mongodb
+      port: 27017
+      targetPort: 27017
+      protocol: TCP
+  sessionAffinity: None
+

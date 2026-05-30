@@ -66,14 +66,6 @@ spec:
         runAsUser: 1001
         fsGroup: 1001
 
-      # Init containers for pre-startup tasks
-      initContainers:
-        - name: wait-for-mongodb
-          image: busybox:1.35
-          command:
-            - sh
-            - -c
-            - 'i=0; while [ $i -lt 30 ]; do nc -z 10.1.0.24 27017 && exit 0; echo waiting for mongodb; i=$((i+1)); sleep 2; done; exit 1'
 
       containers:
         - name: backend

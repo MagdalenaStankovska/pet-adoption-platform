@@ -105,7 +105,7 @@ function AdminDashboard() {
     if (!user || user.role !== "admin") {
         return (
             <div style={{ padding: "40px", textAlign: "center" }}>
-                <h1>🔒 Access Denied</h1>
+                <h1> Access Denied</h1>
                 <p>Only administrators can access this page.</p>
             </div>
         );
@@ -114,7 +114,7 @@ function AdminDashboard() {
     return (
         <div style={{ padding: "40px", maxWidth: "1400px", margin: "0 auto" }}>
             <h1 style={{ fontSize: "40px", marginBottom: "30px", color: "#1a202c" }}>
-                📊 Adoption Applications Dashboard
+                 Adoption Applications Dashboard
             </h1>
 
             <div style={{
@@ -124,7 +124,7 @@ function AdminDashboard() {
                 padding: "20px",
                 marginBottom: "30px"
             }}>
-                <h2 style={{ marginBottom: "12px", color: "#1a202c" }}>🐾 Pet Management</h2>
+                <h2 style={{ marginBottom: "12px", color: "#1a202c" }}> Pet Management</h2>
                 <p style={{ color: "#666", marginBottom: "16px" }}>
                     Add pets from the Add Pet page and delete pets directly here.
                 </p>
@@ -195,7 +195,7 @@ function AdminDashboard() {
                             textTransform: "capitalize"
                         }}
                     >
-                        {filter === "all" ? "📋 All Applications" : `${filter === "pending" ? "⏳" : filter === "approved" ? "✅" : "❌"} ${filter}`}
+                        {filter === "all" ? " All Applications" : `${filter === "pending" ? "⏳" : filter === "approved" ? "✅" : "❌"} ${filter}`}
                     </button>
                 ))}
             </div>
@@ -209,7 +209,7 @@ function AdminDashboard() {
                 marginBottom: "30px",
                 fontWeight: "700"
             }}>
-                📬 Total Applications: <span style={{ fontSize: "24px" }}>{filteredRequests.length}</span>
+                 Total Applications: <span style={{ fontSize: "24px" }}>{filteredRequests.length}</span>
             </div>
 
             {/* Two-Column Layout for Review */}
@@ -225,7 +225,7 @@ function AdminDashboard() {
                                 textAlign: "center",
                                 color: "#999"
                             }}>
-                                <p style={{ fontSize: "18px", marginBottom: "10px" }}>📭 No applications found</p>
+                                <p style={{ fontSize: "18px", marginBottom: "10px" }}> No applications found</p>
                                 <p style={{ fontSize: "14px" }}>Check back later for new adoption applications</p>
                             </div>
                         ) : (
@@ -277,7 +277,7 @@ function AdminDashboard() {
                                         </span>
                                     </div>
                                     <p style={{ color: "#999", fontSize: "13px", margin: "0" }}>
-                                        📅 {new Date(request.request_date).toLocaleDateString()}
+                                         {new Date(request.request_date).toLocaleDateString()}
                                     </p>
                                 </div>
                             ))
@@ -297,13 +297,13 @@ function AdminDashboard() {
                         overflowY: "auto"
                     }}>
                         <h2 style={{ color: "#1a202c", marginBottom: "30px", fontSize: "28px" }}>
-                            📋 Application Review
+                             Application Review
                         </h2>
 
                         {/* Applicant Info */}
                         <div style={{ marginBottom: "30px", paddingBottom: "20px", borderBottom: "2px solid #f0f4ff" }}>
                             <h4 style={{ color: "#5b8cff", marginBottom: "12px", fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                👤 Applicant Information
+                                 Applicant Information
                             </h4>
                             <p style={{ marginBottom: "8px" }}>
                                 <strong>Name:</strong> {selectedRequest.user?.full_name}
@@ -319,7 +319,7 @@ function AdminDashboard() {
                         {/* Pet Info */}
                         <div style={{ marginBottom: "30px", paddingBottom: "20px", borderBottom: "2px solid #f0f4ff" }}>
                             <h4 style={{ color: "#5b8cff", marginBottom: "12px", fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                🐾 Pet Information
+                                 Pet Information
                             </h4>
                             <p style={{ marginBottom: "8px" }}>
                                 <strong>Pet Name:</strong> {selectedRequest.pet?.name}
@@ -332,7 +332,7 @@ function AdminDashboard() {
                         {/* Care Plan */}
                         <div style={{ marginBottom: "30px", paddingBottom: "20px", borderBottom: "2px solid #f0f4ff" }}>
                             <h4 style={{ color: "#5b8cff", marginBottom: "12px", fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                💕 Care Plan
+                                 Care Plan
                             </h4>
                             <div style={{
                                 background: "#f9f9f9",
@@ -349,7 +349,7 @@ function AdminDashboard() {
                         {/* Living Conditions */}
                         <div style={{ marginBottom: "30px", paddingBottom: "20px", borderBottom: "2px solid #f0f4ff" }}>
                             <h4 style={{ color: "#5b8cff", marginBottom: "12px", fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                🏠 Living Conditions
+                                 Living Conditions
                             </h4>
                             <div style={{
                                 background: "#f9f9f9",
@@ -367,7 +367,7 @@ function AdminDashboard() {
                         {selectedRequest.photo_urls && selectedRequest.photo_urls.length > 0 && (
                             <div style={{ marginBottom: "30px", paddingBottom: "20px", borderBottom: "2px solid #f0f4ff" }}>
                                 <h4 style={{ color: "#5b8cff", marginBottom: "12px", fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                    📸 Living Space Photos ({selectedRequest.photo_urls.length})
+                                     Living Space Photos ({selectedRequest.photo_urls.length})
                                 </h4>
                                 <div style={{
                                     display: "grid",
@@ -398,7 +398,7 @@ function AdminDashboard() {
                                         >
                                             <img
                                                 src={url}
-                                                alt=""
+                                                alt={`Application ${index + 1}`}
                                                 style={{
                                                     width: "100%",
                                                     height: "120px",
@@ -418,7 +418,7 @@ function AdminDashboard() {
                         {/* Admin Notes */}
                         <div style={{ marginBottom: "30px" }}>
                             <h4 style={{ color: "#5b8cff", marginBottom: "12px", fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                📝 Admin Notes (Optional)
+                                 Admin Notes (Optional)
                             </h4>
                             <textarea
                                 value={adminNotes}

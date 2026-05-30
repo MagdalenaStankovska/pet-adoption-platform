@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import PetCard from "../components/PetCard";
 
 function Favorites() {
     const [favorites, setFavorites] = useState([]);
     const user = JSON.parse(localStorage.getItem("user"));
 
-    useEffect(() => {
+    const fetchFavorites = useCallback(() => {
         if (!user) return;
 
         fetch(`http://localhost:5000/api/favorites/${user.id}`)
@@ -14,15 +14,10 @@ function Favorites() {
             .catch((error) => console.error(error));
     }, [user]);
 
-    const fetchFavorites = () => {
+    useEffect(() => {
         if (!user) return;
-
-        fetch(`http://localhost:5000/api/favorites/${user.id}`)
-            .then((response) => response.json())
-            .then((data) => setFavorites(data))
-            .catch((error) => console.error(error));
-    };
-
+        fetchFavorites();
+    }, [fetchFavorites, user]);
 
     const removeFavorite = async (petId) => {
         await fetch("http://localhost:5000/api/favorites", {
